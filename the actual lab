@@ -1,0 +1,144 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+bool readmatrixfromfile(const std::string& filename, int matrix[10][10], int& size) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "no file found" << std::endl;
+        return false;
+    }
+
+    file >> size;
+
+    if (size <= 0 || size > 10) {
+        std::cerr << "incorrect matrix size" << std::endl;
+        return false;
+    }
+
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            if (!(file >> matrix[i][j])) {
+                std::cerr << "file data bad :(" << std::endl;
+                return false;
+            }
+        }
+    }
+
+    file.close();
+    return true;
+}
+
+void printmatrix(const int matrix[10][10], int size) {
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            std::cout << matrix[i][j] << "\t";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void addmatrices(const int matrix1[10][10], const int matrix2[10][10], int result[10][10], int size) {
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            result[i][j] = matrix1[i][j] + matrix2[i][j];
+        }
+    }
+}
+
+void multiplymatrices(const int matrix1[10][10], const int matrix2[10][10], int result[10][10], int size) {
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            result[i][j] = 0;
+            for (int k = 0; k < size; ++k) {
+                result[i][j] += matrix1[i][k] * matrix2[k][j];
+            }
+        }
+    }
+}
+
+void subtractmatrices(const int matrix1[10][10], const int matrix2[10][10], int result[10][10], int size) {
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            result[i][j] = matrix1[i][j] - matrix2[i][j];
+        }
+    }
+}
+
+void updatematrixelement(int matrix[10][10], int row, int col, int newValue, int size) {
+    if (row >= 0 && row < size && col >= 0 && col < size) {
+        matrix[row][col] = newValue;
+    } else {
+        std::cerr << "wrong row or column" << std::endl;
+    }
+}
+
+void printmaxvalue(const int matrix[10][10], int size) {
+    int maxValue = matrix[0][0];
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            if (matrix[i][j] > maxValue) {
+                maxValue = matrix[i][j];
+            }
+        }
+    }
+    std::cout << "max number in matrix: " << maxValue << std::endl;
+}
+
+void transposematrix(const int matrix[10][10], int size) {
+    int transposed[10][10];
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            transposed[j][i] = matrix[i][j];
+        }
+    }
+    std::cout << "transposed: " << std::endl;
+    printmatrix(transposed, size);
+}
+
+int main() {
+    int matrix1[10][10], matrix2[10][10], result[10][10];
+    int size;
+    std::string filename;
+
+    std::cout << "file name: ";
+    std::cin >> filename;
+
+    if (!readmatrixfromfile(filename, matrix1, size)) {
+        return 1;
+    }
+
+    if (!readmatrixfromfile(filename, matrix2, size)) {
+        return 1;
+    }
+
+    std::cout << "matrix one: " << std::endl;
+    printmatrix(matrix1, size);
+
+    std::cout << "matrix two:" << std::endl;
+    printmatrix(matrix2, size);
+
+    addmatrices(matrix1, matrix2, result, size);
+    std::cout << "first + second matrix" << std::endl;
+    printmatrix(result, size);
+
+    multiplymatrices(matrix1, matrix2, result, size);
+    std::cout << "first * second matrix" << std::endl;
+    printmatrix(result, size);
+
+    subtractmatrices(matrix1, matrix2, result, size);
+    std::cout << "first - second matrix" << std::endl;
+    printmatrix(result, size);
+
+    int row, col, newValue;
+    std::cout << "row column value (only for first matrix): ";
+    std::cin >> row >> col >> newValue;
+    updatematrixelement(matrix1, row, col, newValue, size);
+    printmatrix(matrix1, size);
+
+    printmaxvalue(matrix1, size);
+
+    transposematrix(matrix1, size);
+
+    return 0;
+}
